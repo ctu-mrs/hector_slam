@@ -4,7 +4,7 @@ project(hector_mapping)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS roscpp nav_msgs visualization_msgs tf message_filters laser_geometry tf_conversions message_generation)
+find_package(catkin REQUIRED COMPONENTS roscpp nav_msgs visualization_msgs tf message_filters laser_geometry tf_conversions message_generation nodelet)
 
 ## System dependencies are found with CMake's conventions
 find_package(Boost REQUIRED COMPONENTS thread)
@@ -62,7 +62,7 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES hector_mapping
+  LIBRARIES HectorMappingRos
   CATKIN_DEPENDS roscpp nav_msgs visualization_msgs tf message_filters laser_geometry tf_conversions message_runtime
   DEPENDS EIGEN3
 )
@@ -85,22 +85,22 @@ include_directories(
 # )
 
 ## Declare a cpp executable
-add_executable(hector_mapping
+add_library(HectorMappingRos
   src/HectorDebugInfoProvider.h
   src/HectorDrawings.h
   src/HectorMappingRos.h
   src/HectorMappingRos.cpp
-  src/main.cpp
+  # src/main.cpp
   src/PoseInfoContainer.cpp
   src/PoseInfoContainer.h
 )
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(hector_mapping hector_mapping_generate_messages_cpp)
+add_dependencies(HectorMappingRos hector_mapping_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(hector_mapping
+target_link_libraries(HectorMappingRos
   ${catkin_LIBRARIES}
   ${Boost_LIBRARIES}
 )
@@ -120,7 +120,7 @@ target_link_libraries(hector_mapping
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS hector_mapping
+install(TARGETS HectorMappingRos
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

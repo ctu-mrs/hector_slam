@@ -5,20 +5,22 @@
 
 #include <boost/thread/mutex.hpp>
 
-class HectorMapMutex : public MapLockerInterface
+namespace hector_mapping
 {
+
+class HectorMapMutex : public MapLockerInterface {
 public:
-  virtual void lockMap()
-  {
+  virtual void lockMap() {
     mapModifyMutex_.lock();
   }
 
-  virtual void unlockMap()
-  {
+  virtual void unlockMap() {
     mapModifyMutex_.unlock();
   }
 
   boost::mutex mapModifyMutex_;
 };
+
+}  // namespace hector_mapping
 
 #endif

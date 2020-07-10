@@ -51,7 +51,7 @@ class HectorSlamProcessor
 {
 public:
 
-  HectorSlamProcessor(float mapResolution, int mapSizeX, int mapSizeY , const Eigen::Vector2f& startCoords, int multi_res_size, DrawInterface* drawInterfaceIn = 0, HectorDebugInfoInterface* debugInterfaceIn = 0)
+  HectorSlamProcessor(float mapResolution, int mapSizeX, int mapSizeY , const Eigen::Vector2f& startCoords, int multi_res_size, std::shared_ptr<DrawInterface> drawInterfaceIn = 0, std::shared_ptr<HectorDebugInfoInterface> debugInterfaceIn = 0)
     : drawInterface(drawInterfaceIn)
     , debugInterface(debugInterfaceIn)
   {
@@ -149,8 +149,8 @@ protected:
   float paramMinDistanceDiffForMapUpdate;
   float paramMinAngleDiffForMapUpdate;
 
-  DrawInterface* drawInterface;
-  HectorDebugInfoInterface* debugInterface;
+  std::shared_ptr<DrawInterface> drawInterface;
+  std::shared_ptr<HectorDebugInfoInterface> debugInterface;
 };
 
 }

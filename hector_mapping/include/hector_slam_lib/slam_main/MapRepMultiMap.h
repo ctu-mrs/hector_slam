@@ -45,7 +45,7 @@ class MapRepMultiMap : public MapRepresentationInterface
 {
 
 public:
-  MapRepMultiMap(float mapResolution, int mapSizeX, int mapSizeY, unsigned int numDepth, const Eigen::Vector2f& startCoords, DrawInterface* drawInterfaceIn, HectorDebugInfoInterface* debugInterfaceIn)
+  MapRepMultiMap(float mapResolution, int mapSizeX, int mapSizeY, unsigned int numDepth, const Eigen::Vector2f& startCoords, std::shared_ptr<DrawInterface> drawInterfaceIn, std::shared_ptr<HectorDebugInfoInterface> debugInterfaceIn)
   {
     //unsigned int numDepth = 3;
     Eigen::Vector2i resolution(mapSizeX, mapSizeY);
