@@ -63,7 +63,7 @@ generate_messages(
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES HectorMappingRos
-  CATKIN_DEPENDS roscpp nav_msgs visualization_msgs tf message_filters laser_geometry tf_conversions message_runtime
+  CATKIN_DEPENDS roscpp nav_msgs visualization_msgs tf message_filters laser_geometry tf_conversions message_runtime nodelet
   DEPENDS EIGEN3
 )
 
