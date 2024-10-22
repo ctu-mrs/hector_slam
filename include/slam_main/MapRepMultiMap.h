@@ -131,16 +131,16 @@ public:
     return tmp;
   }
 
-  virtual void updateByScan(const DataContainer& dataContainer, const Eigen::Vector3f& robotPoseWorld)
+  virtual void updateByScan(const DataContainer& dataContainer, const Eigen::Vector3f& robotPoseWorld, bool update_occupied=true)
   {
     unsigned int size = mapContainer.size();
 
     for (unsigned int i = 0; i < size; ++i){
       //std::cout << " u " <<  i;
       if (i==0){
-        mapContainer[i].updateByScan(dataContainer, robotPoseWorld);
+        mapContainer[i].updateByScan(dataContainer, robotPoseWorld, update_occupied);
       }else{
-        mapContainer[i].updateByScan(dataContainers[i-1], robotPoseWorld);
+        mapContainer[i].updateByScan(dataContainers[i-1], robotPoseWorld, update_occupied);
       }
     }
     //std::cout << "\n";

@@ -100,14 +100,14 @@ public:
     return scanMatcher->matchData(beginEstimateWorld, *gridMapUtil, dataContainer, covMatrix, maxIterations);
   }
 
-  void updateByScan(const DataContainer& dataContainer, const Eigen::Vector3f& robotPoseWorld)
+  void updateByScan(const DataContainer& dataContainer, const Eigen::Vector3f& robotPoseWorld, bool update_occupied=true)
   {
     if (mapMutex)
     {
       mapMutex->lockMap();
     }
 
-    gridMap->updateByScan(dataContainer, robotPoseWorld);
+    gridMap->updateByScan(dataContainer, robotPoseWorld, update_occupied);
 
     if (mapMutex)
     {

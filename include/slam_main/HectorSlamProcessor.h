@@ -68,7 +68,7 @@ public:
     delete mapRep;
   }
 
-  void update(const DataContainer& dataContainer, const Eigen::Vector3f& poseHintWorld, bool map_without_matching = false)
+  void update(const DataContainer& dataContainer, const Eigen::Vector3f& poseHintWorld, const DataContainer& dataContainerOverMaxRange, bool map_without_matching = false)
   {
     //std::cout << "\nph:\n" << poseHintWorld << "\n";
 
@@ -89,6 +89,7 @@ public:
     if(util::poseDifferenceLargerThan(newPoseEstimateWorld, lastMapUpdatePose, paramMinDistanceDiffForMapUpdate, paramMinAngleDiffForMapUpdate) || map_without_matching){
 
       mapRep->updateByScan(dataContainer, newPoseEstimateWorld);
+      mapRep->updateByScan(dataContainerOverMaxRange, newPoseEstimateWorld, false); // updates only the freespace towards the points over max range without final occupied point
 
       mapRep->onMapUpdated();
       lastMapUpdatePose = newPoseEstimateWorld;

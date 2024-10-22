@@ -118,7 +118,7 @@ public:
    * @param dataContainer Contains the laser scan data
    * @param robotPoseWorld The 2D robot pose in world coordinates
    */
-  void updateByScan(const DataContainer& dataContainer, const Eigen::Vector3f& robotPoseWorld)
+  void updateByScan(const DataContainer& dataContainer, const Eigen::Vector3f& robotPoseWorld, bool update_occupied=true)
   {
     currMarkFreeIndex = currUpdateIndex + 1;
     currMarkOccIndex = currUpdateIndex + 2;
@@ -156,7 +156,7 @@ public:
 
       //Update map using a bresenham variant for drawing a line from beam start to beam endpoint in map coordinates
       if (scanBeginMapi != scanEndMapi){
-        updateLineBresenhami(scanBeginMapi, scanEndMapi);
+        updateLineBresenhami(scanBeginMapi, scanEndMapi, update_occupied);
       }
     }
 
@@ -167,7 +167,7 @@ public:
     currUpdateIndex += 3;
   }
 
-  inline void updateLineBresenhami( const Eigen::Vector2i& beginMap, const Eigen::Vector2i& endMap, unsigned int max_length = UINT_MAX){
+  inline void updateLineBresenhami( const Eigen::Vector2i& beginMap, const Eigen::Vector2i& endMap, bool update_occupied, unsigned int max_length = UINT_MAX){
 
     int x0 = beginMap[0];
     int y0 = beginMap[1];
@@ -208,8 +208,10 @@ public:
       bresenham2D(abs_dy, abs_dx, error_x, offset_dy, offset_dx, startOffset);
     }
 
-    unsigned int endOffset = endMap.y() * this->sizeX + endMap.x();
-    this->bresenhamCellOcc(endOffset);
+    if (update_occupied) { 
+      unsigned int endOffset = endMap.y() * this->sizeX + endMap.x();
+      this->bresenhamCellOcc(endOffset);
+    }
 
   }
 

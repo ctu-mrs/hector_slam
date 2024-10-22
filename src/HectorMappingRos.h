@@ -95,9 +95,8 @@ public:
   void setStaticMapData(const nav_msgs::OccupancyGrid& map);
   */
 protected:
-
   std::shared_ptr<HectorDebugInfoProvider> debugInfoProvider;
-  std::shared_ptr<HectorDrawings> hectorDrawings;
+  std::shared_ptr<HectorDrawings>          hectorDrawings;
 
   int lastGetMapUpdateIndex;
 
@@ -118,7 +117,7 @@ protected:
 
   std::vector<MapPublisherContainer> mapPubContainer;
 
-  tf::TransformListener     tf_;
+  tf::TransformListener tf_;
 
   std::unique_ptr<tf::TransformBroadcaster> tfB_;
 
@@ -130,7 +129,7 @@ protected:
 
   std::unique_ptr<hectorslam::HectorSlamProcessor> slamProcessor;
 
-  hectorslam::DataContainer        laserScanContainer;
+  hectorslam::DataContainer laserScanContainer;
 
   PoseInfoContainer poseInfoContainer_;
 
@@ -193,9 +192,11 @@ protected:
   float p_laser_z_max_value_;
 
   // update map in direction of rays over max range
-  float p_dist_for_rays_over_max_range_;
-  bool p_update_map_over_max_range_;
-  sensor_msgs::LaserScan scanWithOverMaxRangeRays(const sensor_msgs::LaserScan& scan, double target_dist);
+  sensor_msgs::PointCloud   laser_point_cloud_over_max_range_;
+  hectorslam::DataContainer laserScanContainerOverMaxRange;
+  float                     p_dist_for_rays_over_max_range_;
+  bool                      p_update_map_over_max_range_;
+  sensor_msgs::LaserScan    scanWithOverMaxRangeRays(const sensor_msgs::LaserScan& scan, double target_dist);
 };
 
 }  // namespace hector_mapping

@@ -79,9 +79,9 @@ public:
     return scanMatcher->matchData(beginEstimateWorld, *gridMapUtil, dataContainer, covMatrix, 20);
   }
 
-  virtual void updateByScan(const DataContainer& dataContainer, const Eigen::Vector3f& robotPoseWorld)
+  virtual void updateByScan(const DataContainer& dataContainer, const Eigen::Vector3f& robotPoseWorld, bool update_occupied=true)
   {
-    gridMap->updateByScan(dataContainer, robotPoseWorld);
+    gridMap->updateByScan(dataContainer, robotPoseWorld, update_occupied);
   }
 
 protected:

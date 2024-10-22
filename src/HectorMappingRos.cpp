@@ -237,10 +237,11 @@ void HectorMappingRos::scanCallback(const sensor_msgs::LaserScan& scan) {
   }
 
   ros::WallTime startTime = ros::WallTime::now();
+  hectorslam::DataContainer empty_container;
 
   if (!p_use_tf_scan_transformation_) {
     if (rosLaserScanToDataContainer(scan, laserScanContainer, slamProcessor->getScaleToMap())) {
-      slamProcessor->update(laserScanContainer, slamProcessor->getLastScanMatchPose());
+      slamProcessor->update(laserScanContainer, slamProcessor->getLastScanMatchPose(), empty_container);
     }
   } else {
     ros::Duration dur(0.5);
@@ -250,16 +251,9 @@ void HectorMappingRos::scanCallback(const sensor_msgs::LaserScan& scan) {
       tf_.lookupTransform(p_base_frame_, scan.header.frame_id, scan.header.stamp, laserTransform);
 
       // projector_.transformLaserScanToPointCloud(p_base_frame_ ,scan, pointCloud,tf_);
+      projector_.projectLaser(scan, laser_point_cloud_, 30.0);
+
       // replace points over max range by points within the max range to clear the free space
-      if (p_update_map_over_max_range_) { 
-
-        sensor_msgs::LaserScan scan_ = scanWithOverMaxRangeRays(scan, p_dist_for_rays_over_max_range_);
-        projector_.projectLaser(scan_, laser_point_cloud_, 30.0);
-
-      } else { 
-        projector_.projectLaser(scan, laser_point_cloud_, 30.0);
-      }
-
       if (scan_point_cloud_publisher_.getNumSubscribers() > 0) {
         scan_point_cloud_publisher_.publish(laser_point_cloud_);
       }
@@ -293,11 +287,21 @@ void HectorMappingRos::scanCallback(const sensor_msgs::LaserScan& scan) {
         }
 
 
-        if (p_map_with_known_poses_) {
-          slamProcessor->update(laserScanContainer, startEstimate, true);
-        } else {
-          slamProcessor->update(laserScanContainer, startEstimate);
+        if (p_update_map_over_max_range_) { 
+          sensor_msgs::LaserScan scan_over_max_range = scanWithOverMaxRangeRays(scan, p_dist_for_rays_over_max_range_);
+          projector_.projectLaser(scan_over_max_range, laser_point_cloud_over_max_range_, 30.0);
+
+          if (rosPointCloudToDataContainer(laser_point_cloud_over_max_range_, laserTransform, laserScanContainerOverMaxRange, slamProcessor->getScaleToMap())) { 
+            slamProcessor->update(laserScanContainer, startEstimate, laserScanContainerOverMaxRange, p_map_with_known_poses_);
+          } else { 
+            slamProcessor->update(laserScanContainer, startEstimate, p_map_with_known_poses_);
+          }
+
+        } else { 
+
+          slamProcessor->update(laserScanContainer, startEstimate, empty_container, p_map_with_known_poses_);
         }
+
       }
 
     } else {
@@ -357,6 +361,8 @@ sensor_msgs::LaserScan HectorMappingRos::scanWithOverMaxRangeRays(const sensor_m
   for (size_t k = 0; k < scan_.ranges.size(); k++) {
     if (scan_.ranges[k] > scan_.range_max) { 
       scan_.ranges[k] = target_dist;
+    } else { 
+      scan_.ranges[k] = std::numeric_limits<float>::infinity();
     }
   } 
 
