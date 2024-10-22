@@ -191,6 +191,11 @@ protected:
   float p_sqr_laser_max_dist_;
   float p_laser_z_min_value_;
   float p_laser_z_max_value_;
+
+  // update map in direction of rays over max range
+  float p_dist_for_rays_over_max_range_;
+  bool p_update_map_over_max_range_;
+  sensor_msgs::LaserScan scanWithOverMaxRangeRays(const sensor_msgs::LaserScan& scan, double target_dist);
 };
 
 }  // namespace hector_mapping

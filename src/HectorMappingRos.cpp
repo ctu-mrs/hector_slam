@@ -105,6 +105,11 @@ void HectorMappingRos::onInit() {
   private_nh_.param("laser_z_max_value", tmp, 1.0);
   p_laser_z_max_value_ = static_cast<float>(tmp);
 
+  private_nh_.param("update_map_over_max_range", p_update_map_over_max_range_, false);
+
+  private_nh_.param("dist_for_rays_over_max_range", tmp, 20.0);
+  p_dist_for_rays_over_max_range_ = static_cast<float>(tmp);
+
   debugInfoProvider     = 0;
   hectorDrawings        = 0;
   lastGetMapUpdateIndex = 100;
@@ -245,7 +250,15 @@ void HectorMappingRos::scanCallback(const sensor_msgs::LaserScan& scan) {
       tf_.lookupTransform(p_base_frame_, scan.header.frame_id, scan.header.stamp, laserTransform);
 
       // projector_.transformLaserScanToPointCloud(p_base_frame_ ,scan, pointCloud,tf_);
-      projector_.projectLaser(scan, laser_point_cloud_, 30.0);
+      // replace points over max range by points within the max range to clear the free space
+      if (p_update_map_over_max_range_) { 
+
+        sensor_msgs::LaserScan scan_ = scanWithOverMaxRangeRays(scan, p_dist_for_rays_over_max_range_);
+        projector_.projectLaser(scan_, laser_point_cloud_, 30.0);
+
+      } else { 
+        projector_.projectLaser(scan, laser_point_cloud_, 30.0);
+      }
 
       if (scan_point_cloud_publisher_.getNumSubscribers() > 0) {
         scan_point_cloud_publisher_.publish(laser_point_cloud_);
@@ -335,6 +348,19 @@ void HectorMappingRos::scanCallback(const sensor_msgs::LaserScan& scan) {
   if (p_pub_map_scanmatch_transform_) {
     tfB_->sendTransform(tf::StampedTransform(poseInfoContainer_.getTfTransform(), scan.header.stamp, p_map_frame_, p_tf_map_scanmatch_transform_frame_name_));
   }
+}
+
+sensor_msgs::LaserScan HectorMappingRos::scanWithOverMaxRangeRays(const sensor_msgs::LaserScan& scan, double target_dist) {
+
+  sensor_msgs::LaserScan scan_ = scan;
+
+  for (size_t k = 0; k < scan_.ranges.size(); k++) {
+    if (scan_.ranges[k] > scan_.range_max) { 
+      scan_.ranges[k] = target_dist;
+    }
+  } 
+
+  return scan_;
 }
 
 void HectorMappingRos::sysMsgCallback(const std_msgs::String& string) {
